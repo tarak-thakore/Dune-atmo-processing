@@ -1,0 +1,14 @@
+Python virtualenv
+
+1. Download/install pip: wget https://bootstrap.pypa.io/get-pip.py;
+2. Install virtualenv: pip install --user virtualenv
+3. Create & source a virtualenv: virtualenv env; source env/bin/activate
+4. Install packages in the virtualenv: pip install numpy, pandas, matplotlib
+5. deactivate
+
+Setup_nova or setup_dune needs to be called before using python packages
+export PATH=$PATH:~/.local/bin # this prioritizes original PATH 
+export PATH=~/.local/bin:$PATH # this prioritized ~/.local/bin
+
+If using virtualenv, append virtualenv path to PATH
+

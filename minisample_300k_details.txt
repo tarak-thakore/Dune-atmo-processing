@@ -1,0 +1,18 @@
+
+APC analysis code:
+https://github.com/hvsouza/apc_atmo_repo/tree/master/Anatree
+
+https://github.com/hvsouza/apc_atmo_repo/blob/master/personal/Pierre/angular_reco.ipynb
+
+
+300k root files:
+/pnfs/dune/persistent/users/pgranger/atm_50k_hd_AV_2.5_random/reco
+/pnfs/dune/persistent/users/pgranger/atm_50k_hd_AV_2.5_random//anatree
+
+fully anatree file:
+/pnfs/dune/persistent/users/pgranger/atm_50k_hd_AV_2.5_random/anatree_new/anatree_hd_AV_2dot5_random_sum_300k_new.root 
+
+analysistree->cd()
+anatree->Print()
+
+ana_tree_hd_9993.root
