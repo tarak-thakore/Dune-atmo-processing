@@ -13,16 +13,17 @@ tree_name = 'analysistree/anatree'
 
 np.set_printoptions(threshold=sys.maxsize)
 #initialize parallel-pandas
-ParallelPandas.initialize(n_cpu=16, split_factor=4, disable_pr_bar=False)
+#ParallelPandas.initialize(n_cpu=16, split_factor=4, disable_pr_bar=False)
+ParallelPandas.initialize(n_cpu=1, split_factor=1, disable_pr_bar=False)
 
 
 # Define the list of TBranches to read
 #branches = ['enu_truth','nuPDG_truth','nuvtxx_truth','nuvtxy_truth','nuvtxz_truth']
 #branches = ['run','enu_truth','nuPDG_truth','nuvtxx_truth','nuvtxy_truth','nuvtxz_truth','genie_Eng','EndPointx_geant']
 
-branches_genie = ['nuPDG_truth','ccnc_truth', 'nuvtxx_truth','nuvtxy_truth','nuvtxz_truth', 'enu_truth','nu_dcosx_truth','nu_dcosy_truth','nu_dcosz_truth','lep_mom_truth', 'lep_dcosx_truth', 'lep_dcosy_truth', 'lep_dcosz_truth', 'mode_truth', 'nuWeight_truth','Q2_truth', 'W_truth', 'X_truth', 'Y_truth','genie_no_primaries','genie_primaries_pdg','genie_Eng', 'genie_Px','genie_Py','genie_Pz','genie_P','genie_status_code']
+branches_genie = ['nuPDG_truth','ccnc_truth', 'nuvtxx_truth','nuvtxy_truth','nuvtxz_truth', 'enu_truth','nu_dcosx_truth','nu_dcosy_truth','nu_dcosz_truth','lep_mom_truth', 'lep_dcosx_truth', 'lep_dcosy_truth', 'lep_dcosz_truth', 'mode_truth', 'nuWeight_truth','Q2_truth', 'W_truth', 'X_truth', 'Y_truth','genie_no_primaries','genie_primaries_pdg','genie_Eng', 'genie_Px','genie_Py','genie_Pz','genie_P','genie_mass','genie_status_code']
 
-genie_branches_to_filter = ['genie_primaries_pdg','genie_Eng', 'genie_Px','genie_Py','genie_Pz','genie_P','genie_status_code']
+genie_branches_to_filter = ['genie_primaries_pdg','genie_Eng', 'genie_Px','genie_Py','genie_Pz','genie_P','genie_mass','genie_status_code']
 
 branches_test = ['enu_truth','genie_no_primaries','genie_primaries_pdg','genie_P']
 
@@ -44,7 +45,24 @@ branch_dict={}
 
 # function to filter genie arrays by their status codes
 def filter_genie(row, genie_columns):
-  return {k: [x for x, status in zip(row[k], row['genie_status_code']) if status in [1]] if k in genie_columns else row[k] for k in row.keys()}
+  #return {k: [x for x, status in zip(row[k], row['genie_status_code']) if status in [1]] if k in genie_columns else row[k] for k in row.keys()}
+
+  # Get the status codes
+  status_codes = row['genie_status_code']
+
+  # Filter each genie column based on the status codes
+  filtered_genies = {col: [x for x, status in zip(row[col], status_codes) if status in [1]] for col in genie_columns}
+
+  # Calculate Pz/|P|
+  #genie_Eng_filtered = np.array(filtered_genies['genie_Eng'], dtype=float)
+  #genie_Pz_filtered = np.array(filtered_genies['genie_Pz'], dtype=float)
+  #genie_cos_th_z = np.divide(genie_Pz_filtered,genie_Eng_filtered)
+  #filtered_genies['genie_cos_th_z'] = genie_cos_th_z
+
+    
+  return pd.Series(filtered_genies)
+
+
 
 def flatten_branch(branch):
   flattened_arr = []
@@ -108,8 +126,9 @@ with uproot.open(root_file_path) as root_file:
 
     # create a filter on genie vars
     filtered_genies = chunk_df.apply(filter_genie, axis=1, genie_columns=genie_branches_to_filter)
-    filtered_df = pd.DataFrame(filtered_genies.tolist())
-    chunk_df[genie_branches_to_filter] = filtered_df[genie_branches_to_filter]
+    #filtered_df = pd.DataFrame(filtered_genies.tolist())
+    #chunk_df[genie_branches_to_filter] = filtered_df[genie_branches_to_filter]
+    chunk_df[genie_branches_to_filter] = filtered_genies[genie_branches_to_filter]
 
 
     #print("Go to the next chunk")

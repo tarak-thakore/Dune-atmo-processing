@@ -24,9 +24,9 @@ t1=f1['analysistree/anatree']
 #list of branches to read
 #branches = ['enu_truth','nuPDG_truth','nuvtxx_truth','nuvtxy_truth','nuvtxz_truth']
 
-branches_genie = ['nuPDG_truth','ccnc_truth', 'nuvtxx_truth','nuvtxy_truth','nuvtxz_truth', 'enu_truth','nu_dcosx_truth','nu_dcosy_truth','nu_dcosz_truth','lep_mom_truth', 'lep_dcosx_truth', 'lep_dcosy_truth', 'lep_dcosz_truth', 'mode_truth', 'nuWeight_truth','Q2_truth', 'W_truth', 'X_truth', 'Y_truth','genie_no_primaries','genie_primaries_pdg','genie_Eng', 'genie_Px','genie_Py','genie_Pz','genie_P','genie_status_code']
+branches_genie = ['nuPDG_truth','ccnc_truth', 'nuvtxx_truth','nuvtxy_truth','nuvtxz_truth', 'enu_truth','nu_dcosx_truth','nu_dcosy_truth','nu_dcosz_truth','lep_mom_truth', 'lep_dcosx_truth', 'lep_dcosy_truth', 'lep_dcosz_truth', 'mode_truth', 'nuWeight_truth','Q2_truth', 'W_truth', 'X_truth', 'Y_truth','genie_no_primaries','genie_primaries_pdg','genie_Eng', 'genie_Px','genie_Py','genie_Pz','genie_P','genie_mass','genie_status_code']
 
-genie_branches_to_filter = ['genie_primaries_pdg','genie_Eng', 'genie_Px','genie_Py','genie_Pz','genie_P','genie_status_code']
+genie_branches_to_filter = ['genie_primaries_pdg','genie_Eng', 'genie_Px','genie_Py','genie_Pz','genie_P','genie_mass','genie_status_code']
 
 
 branches = ['run','enu_truth','nuPDG_truth','nuvtxx_truth','nuvtxy_truth','nuvtxz_truth','genie_Eng','EndPointx_geant']
@@ -47,7 +47,24 @@ np.set_printoptions(threshold=sys.maxsize)
 
 # function to filter genie arrays by their status codes
 def filter_genie(row, genie_columns):
- return {k: [x for x, status in zip(row[k], row['genie_status_code']) if status in [0,1]] if k in genie_columns else row[k] for k in row.keys()}
+  #return {k: [x for x, status in zip(row[k], row['genie_status_code']) if status in [0,1]] if k in genie_columns else row[k] for k in row.keys()}
+
+  # Get the status codes
+  status_codes = row['genie_status_code']
+
+  # Filter each genie column based on the status codes
+  filtered_genies = {col: [x for x, status in zip(row[col], status_codes) if status in [1]] for col in genie_columns}
+
+  # Calculate Pz/|P|
+  #genie_Eng_filtered = np.array(filtered_genies['genie_Eng'], dtype=float)
+  #genie_Pz_filtered = np.array(filtered_genies['genie_Pz'], dtype=float)
+  #genie_cos_th_z = np.divide(genie_Pz_filtered,genie_Eng_filtered)
+  #filtered_genies['genie_cos_th_z'] = genie_cos_th_z
+
+    
+  return pd.Series(filtered_genies)
+
+
 
 # Function to convert numpy arrays to string representations without square brackets
 def array_to_string(array):
@@ -92,8 +109,10 @@ df = pd.DataFrame(arr)
 
 # create a filter on genie vars
 filtered_genies = df.apply(filter_genie, axis=1, genie_columns=genie_branches_to_filter)
-filtered_df = pd.DataFrame(filtered_genies.tolist())
-df[genie_branches_to_filter] = filtered_df[genie_branches_to_filter]
+#filtered_df = pd.DataFrame(filtered_genies.tolist())
+#df[genie_branches_to_filter] = filtered_df[genie_branches_to_filter]
+df[genie_branches_to_filter] = filtered_genies[genie_branches_to_filter]
+
 
 # Apply the function to numpy array columns
 # convert to string

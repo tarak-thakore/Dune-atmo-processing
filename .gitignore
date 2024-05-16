@@ -1,4 +1,5 @@
 *.csv
+*.log
 *.root
 *.png
 *.jpeg

@@ -1,0 +1,15 @@
+
+srun --pty --nodes=1 --partition wc_gpu -A fwk --gres=gpu:v100:1 bash
+
+srun --unbuffered --pty -A fwk --qos=regular --partition=wc_cpu --nodes=1 --time=03:00:00 --ntasks-per-node=1 --cpus-per-task=16 /bin/bash
+
+export https_proxy=http://squid.fnal.gov:3128
+export http_proxy=http://squid.fnal.gov:3128
+
+module load apptainer
+
+export APPTAINER_CACHEDIR=/scratch/.singularity/cache
+export HOME=/work1/nova/tthakore/
+
+apptainer shell --userns --nv --workdir=/scratch/work --home=/work1/nova/tthakore/ /wclustre/nova/users/tthakore/images/tensorflow:24.03-tf-2.15-py3.sif
+
