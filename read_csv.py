@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 #df = pd.read_csv('dataset_lstm_ee_fd_fhc_nonswap.csv')
-df = pd.read_csv('output.csv')
+df = pd.read_csv('../ml_datasets/dune_atmo_genie_pandora_300k_extended.csv')
 #df = pd.read_csv('output.csv',compression='xz')
 
 # Convert string representations back to numpy arrays
